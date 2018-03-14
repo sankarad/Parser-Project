@@ -3,33 +3,32 @@
 #include "Basic.h"
 #include "defs.h"
 
-struct ExprList* check_createStack();
-struct BindList* check_createEnv();
-struct BindListList* check_createEnvList();
+void check_createStack();
+void check_createEnv();
+void check_createEnvList();
 
-void test00(void) {}
+void test00(void) { check_createStack(); }
+void test01(void) { check_createEnv(); }
+void test02(void) { check_createEnvList(); }
 
-struct ExprList * check_createStack() {
+void check_createStack() {
 	struct ExprList *stack = exprList_Empty();
 	CU_ASSERT(exprList_isEmpty(stack));
 	CU_ASSERT_PTR_NULL(exprList_top(stack));
 	CU_ASSERT_PTR_NULL(exprList_pop(stack));
-	return stack;
 }
 
-struct BindList * check_createEnv() {
+void check_createEnv() {
 	struct BindList *env = bindList_Empty();
 	CU_ASSERT(bindList_isEmpty(env));
 	CU_ASSERT_PTR_NULL(bindList_pop(env));
-	return env;
 }
 
-struct BindListList * createEnvList() {
+void check_createEnvList() {
 	struct BindListList *envList = bindListList_Empty();
 	CU_ASSERT(bindListList_isEmpty(envList));
 	CU_ASSERT_PTR_NULL(bindListList_top(envList));
         CU_ASSERT_PTR_NULL(bindListList_pop(envList));
-	return envList;
 }
 
 /* The main() function for setting up and running the tests.
@@ -52,7 +51,9 @@ int main()
 
    /* add the tests to the suite */
    if (
-          (NULL == CU_add_test(pSuite, "test00", test00))
+        	(NULL == CU_add_test(pSuite, "createStackTest", test00))
+	||	(NULL == CU_add_test(pSuite, "createEnvTest", test01))
+	||	(NULL == CU_add_test(pSuite, "createEnvListTest", test02))
       )
    {
       CU_cleanup_registry();
