@@ -1,9 +1,36 @@
 #include <stdio.h>
 #include "CUnit.h"
 #include "Basic.h"
-#include "code.h"
+#include "defs.h"
+
+struct ExprList* check_createStack();
+struct BindList* check_createEnv();
+struct BindListList* check_createEnvList();
 
 void test00(void) {}
+
+struct ExprList * check_createStack() {
+	struct ExprList *stack = exprList_Empty();
+	CU_ASSERT(exprList_isEmpty(stack));
+	CU_ASSERT_PTR_NULL(exprList_top(stack));
+	CU_ASSERT_PTR_NULL(exprList_pop(stack));
+	return stack;
+}
+
+struct BindList * check_createEnv() {
+	struct BindList *env = bindList_Empty();
+	CU_ASSERT(bindList_isEmpty(env));
+	CU_ASSERT_PTR_NULL(bindList_pop(env));
+	return env;
+}
+
+struct BindListList * createEnvList() {
+	struct BindListList *envList = bindListList_Empty();
+	CU_ASSERT(bindListList_isEmpty(envList));
+	CU_ASSERT_PTR_NULL(bindListList_top(envList));
+        CU_ASSERT_PTR_NULL(bindListList_pop(envList));
+	return envList;
+}
 
 /* The main() function for setting up and running the tests.
  * Returns a CUE_SUCCESS on successful running, another

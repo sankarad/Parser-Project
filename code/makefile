@@ -1,14 +1,15 @@
-objects = Bind.o BindList.o BindListList.o \
+OBJECTS = Bind.o BindList.o BindListList.o \
 	Expr.o ExprList.o \
 	Primitives.o \
 	REPL.o \
-	interpreter.o
 
+CUNIT_PATH_PREFIX = /util/CUnit/
+CUNIT_DIRECTORY = CUnit/
 CC = gcc
-FLAGS = -c -Wall -std=c11
+FLAGS = -c -g -Wall -std=c11
 
-interpreter : $(objects) interpreter.c
-	$(CC) -Wall -lm -o interpreter $(objects) 
+interpreter : $(OBJECTS) interpreter.o interpreter.c
+	$(CC) -Wall -lm -o interpreter $(OBJECTS) interpreter.o
 
 interpreter.o : interpreter.c
 	$(CC) $(FLAGS) interpreter.c
@@ -34,5 +35,8 @@ Primitives.o : defs.h Primitives.c
 REPL.o : defs.h REPL.c 
 	$(CC) $(FLAGS) REPL.c
 
+tests: $(OBJECTS) tests.c
+	$(CC) -Wall -lm  -L $(CUNIT_PATH_PREFIX)lib -I $(CUNIT_PATH_PREFIX)include/$(CUNIT_DIRECTORY) $(OBJECTS) tests.c -o tests -lcunit -lgcov
+
 clean :
-	rm -fv interpreter $(objects) *~
+	rm -fv interpreter tests *.o *~
