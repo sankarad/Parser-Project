@@ -25,8 +25,8 @@ void subtractTest(void){
    struct Expr * sub = parse("sub", envList); 
    eval(sub, stack, envList); 
 
-   printf("Subtract test: Stack is [5 7 sub] with actual result of %d and expected is %d\n", exprList_top(stack).subtype.number.value, 2);
-   CU_ASSERT(exprList_top(stack).type == NUMBER && exprList_top(stack).subtype.number.value == 2);
+   printf("Subtract test: Stack is [5 7 sub] with actual result of %d and expected is %d\n", exprList_top(stack)->subtype.number.value, 2);
+   CU_ASSERT(exprList_top(stack)->type == NUMBER && exprList_top(stack)->subtype.number.value == 2);
 
 }
 
