@@ -18,13 +18,13 @@ void subtractTest(void){
    struct BindListList *envList = bindListList_Empty();
    bindListList_push(envList,env);
 
-   Struct Expr * a = parse("5", envList);
+   struct Expr * a = parse("5", envList);
    eval(a, stack, envList); 
-   Struct Expr * b = parse("7", envList); 
+   struct Expr * b = parse("7", envList); 
    eval(b, stack, envList); 
-   Struct Expr * sub = parse("sub", envList); 
+   struct Expr * sub = parse("sub", envList); 
    eval(sub, stack, envList); 
-   
+
    printf("Subtract test: Stack is [5 7 sub] with actual result of %d and expected is %d\n", exprList_top(stack).subtype.number.value, 2);
    CU_ASSERT(exprList_top(stack).type == NUMBER && exprList_top(stack).subtype.number.value == 2);
 
