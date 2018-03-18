@@ -12,7 +12,7 @@ void test00(void) { check_createStack(); }
 void test01(void) { check_createEnv(); }
 void test02(void) { check_createEnvList(); }
 
-void subtractTest(void){
+void subtractTest01(void){
    struct ExprList *stack = exprList_Empty();
    struct BindList *env = bindList_Empty();
    struct BindListList *envList = bindListList_Empty();
@@ -26,8 +26,28 @@ void subtractTest(void){
    eval(sub, stack, envList); 
 
    struct Expr * res = exprList_top(stack);
-   printf("Subtract test: Stack is [5 7 sub] with actual result of %d and expected is %d\n", res->subtype.number.value, -2);
-   CU_ASSERT(res->type == NUMBER && res->subtype.number.value == -2);
+   int expected = -2;
+   printf("Subtract test: Stack is [5 7 sub] with actual result of %d and expected is %d\n", res->subtype.number.value, expected);
+   CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
+}
+
+void subtractTest02(void){
+   struct ExprList *stack = exprList_Empty();
+   struct BindList *env = bindList_Empty();
+   struct BindListList *envList = bindListList_Empty();
+   bindListList_push(envList,env);
+
+   struct Expr * a = parse("-100", envList);
+   eval(a, stack, envList); 
+   struct Expr * b = parse("50", envList); 
+   eval(b, stack, envList); 
+   struct Expr * sub = parse("sub", envList); 
+   eval(sub, stack, envList); 
+
+   struct Expr * res = exprList_top(stack);
+   int expected = -150;
+   printf("Subtract test: Stack is [-100 50 sub] with actual result of %d and expected is %d\n", res->subtype.number.value, expected);
+   CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
 }
 
 void check_createStack() {
@@ -75,7 +95,8 @@ int main()
          (NULL == CU_add_test(pSuite, "createStackTest", test00))
 	  || (NULL == CU_add_test(pSuite, "createEnvTest", test01))
 	  || (NULL == CU_add_test(pSuite, "createEnvListTest", test02))
-     || (NULL == CU_add_test(pSuite, "subtractTest", subtractTest))
+     || (NULL == CU_add_test(pSuite, "subtractTest01", subtractTest01))     
+     || (NULL == CU_add_test(pSuite, "subtractTest02", subtractTest02))
       )
    {
       CU_cleanup_registry();
