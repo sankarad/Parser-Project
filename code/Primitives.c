@@ -72,7 +72,8 @@ struct Expr * add(struct Expr * num1, struct Expr * num2){
 }
 
 /*   SUB: Subtract function	 */
-struct Expr * sub(struct Expr * num2, struct Expr * num1){
+/*  Switched the parameter ordering from num2 num1 to num1 num2 -kenny  */
+struct Expr * sub(struct Expr * num1, struct Expr * num2){
   if (isNumber(num1) && isNumber(num2)) {
     return Number(valueOf(num1) - valueOf(num2));
   }
