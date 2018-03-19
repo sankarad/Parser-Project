@@ -6,10 +6,46 @@
 void check_createStack();
 void check_createEnv();
 void check_createEnvList();
+void test_addOneString(char *, char *);
+void test_addManyStrings(char *);
 
-void test00(void) { check_createStack(); }
-void test01(void) { check_createEnv(); }
-void test02(void) { check_createEnvList(); }
+void envTest00(void) { check_createStack(); }
+void envTest01(void) { check_createEnv(); }
+void envTest02(void) { check_createEnvList(); }
+void stringTest00(void) { test_addOneString("\"true\"", "true"); }
+void stringTest01(void)	{ test_addOneString("\"This is one string\"", "This is one string"); }
+void stringTest02(void)	{ test_addOneString("\"a\"", "a"); }
+void stringTest03(void)	{ test_addOneString("\" \"", " "); }
+void stringTest04(void)	{ test_addOneString("\"\"", ""); }
+void stringTest05(void) { test_addOneString("\"this\nis\na\nmultiline\nstring\"", "this\nis\na\nmultiline\nstring"); }
+
+void test_addManyStrings(char *) {
+
+}
+
+void test_addOneString(char * input, char * strippedString) {
+	//First check that the String is a String method can properly identify
+	CU_ASSERT_TRUE(stringIsAString(input));
+
+	//Check that the stripped string is what is expected
+	CU_ASSERT_STRING_EQUAL(stripFirstAndLast(input), strippedString);
+	
+	//set up environment and stack
+	struct ExprList *stack = exprList_Empty();
+	struct BindList *env = bindList_Empty();
+	struct BindListList *envList = bindListList_Empty();
+	bindListList_push(envList,env);
+
+	//push String to stack
+	struct Expr * toPush = parse(input, envList);
+	eval(toPush, stack, envList);
+	struct Expr * top = exprList_top(stack);
+
+	//Check what has been sent to the stack
+	CU_ASSERT_TRUE(isString(top));
+	CU_ASSERT_STRING_EQUAL(nameOf(top), strippedString);
+	CU_ASSERT_STRING_EQUAL(expression2string(top), input);	
+}
 
 void check_createStack() {
 	struct ExprList *stack = exprList_Empty();
@@ -51,10 +87,16 @@ int main()
 
    /* add the tests to the suite */
    if (
-        	(NULL == CU_add_test(pSuite, "createStackTest", test00))
-	||	(NULL == CU_add_test(pSuite, "createEnvTest", test01))
-	||	(NULL == CU_add_test(pSuite, "createEnvListTest", test02))
-      )
+        	(NULL == CU_add_test(pSuite, "createStackTest", envTest00))
+	||	(NULL == CU_add_test(pSuite, "createEnvTest", envTest01))
+	||	(NULL == CU_add_test(pSuite, "createEnvListTest", envTest02))
+	||	(NULL == CU_add_test(pSuite, "\"true\" test", stringTest00))
+	||	(NULL == CU_add_test(pSuite, "\"This is a string\" test", stringTest01))
+	||	(NULL == CU_add_test(pSuite, "\"a\" test", stringTest02))
+	||	(NULL == CU_add_test(pSuite, "\" \" test", stringTest03))
+	||	(NULL == CU_add_test(pSuite, "Empty string test", stringTest04))      
+        ||	(NULL == CU_add_test(pSuite, "Multi-line string test", stringTest05))
+	)
    {
       CU_cleanup_registry();
       return CU_get_error();
