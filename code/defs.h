@@ -6,6 +6,7 @@ struct Bind;
 struct BindList;
 struct BindListList;
 
+#define _GNU_SOURCE
 #include <ctype.h>
 #include <math.h>
 #include <stdio.h>

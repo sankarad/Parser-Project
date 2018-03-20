@@ -34,7 +34,10 @@ REPL.o : defs.h REPL.c
 	$(CC) $(FLAGS) REPL.c
 
 tests: $(OBJECTS) tests.c
-	$(CC) -Wall -lm  -L $(CUNIT_PATH_PREFIX)lib -I $(CUNIT_PATH_PREFIX)include/$(CUNIT_DIRECTORY) $(OBJECTS) tests.c -o tests -lcunit -lgcov
+	$(CC) -Wall -lm -L $(CUNIT_PATH_PREFIX)lib -I $(CUNIT_PATH_PREFIX)include/$(CUNIT_DIRECTORY) $(OBJECTS) tests.c -o tests -lcunit -lgcov
 
+testsClang: $(OBJECTS) tests.c
+	clang -Wall -lm -L $(CUNIT_PATH_PREFIX)lib -I $(CUNIT_PATH_PREFIX)include/$(CUNIT_DIRECTORY) $(OBJECTS) tests.c -o tests -lcunit -lgcov
 clean :
 	rm -fv interpreter tests *.o *~
+
