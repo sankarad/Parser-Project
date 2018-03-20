@@ -1,7 +1,5 @@
-OBJECTS = Bind.o BindList.o BindListList.o \
-	Expr.o ExprList.o \
-	Primitives.o \
-	REPL.o \
+OBJECTS = Bind.o BindList.o BindListList.o Expr.o ExprList.o \
+	Primitives.o REPL.o
 
 CUNIT_PATH_PREFIX = /util/CUnit/
 CUNIT_DIRECTORY = CUnit/
