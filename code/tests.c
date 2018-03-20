@@ -16,7 +16,14 @@ void stringTest01(void)	{ test_addStringMultTimes("\"This is one string\"", "Thi
 void stringTest02(void)	{ test_addStringMultTimes("\"a\"", "a", 1); }
 void stringTest03(void)	{ test_addStringMultTimes("\" \"", " ", 1); }
 void stringTest04(void)	{ test_addStringMultTimes("\"\"", "", 1); }
-void stringTest05(void) { test_addStringMultTimes("\"this\nis\na\nmultiline\nstring\"", "this\nis\na\nmultiline\nstring", 1); }
+void stringTest05(void) { test_addStringMultTimes("\"this\nis\na\nmultiline\nstring\"", "this\nis\na\nmultiline\nstring", 10); }
+void stringTest06(void) { test_addStringMultTimes("\"true\"", "true", 10); }
+void stringTest07(void) { test_addStringMultTimes("\"This is one string\"", "This is one string", 10); }
+void stringTest08(void) { test_addStringMultTimes("\"a\"", "a", 10); }
+void stringTest09(void) { test_addStringMultTimes("\" \"", " ", 10); }
+void stringTest10(void) { test_addStringMultTimes("\"\"", "", 10); }
+void stringTest11(void) { test_addStringMultTimes("\"this\nis\na\nmultiline\nstring\"", "this\nis\na\nmultiline\nstring", 10); }
+
 
 void test_addStringMultTimes(char * input, char * strippedString, int count) {
 	//First check that the String is a String method can properly identify
@@ -94,6 +101,12 @@ int main()
 	||	(NULL == CU_add_test(pSuite, "\" \" test", stringTest03))
 	||	(NULL == CU_add_test(pSuite, "Empty string test", stringTest04))      
         ||	(NULL == CU_add_test(pSuite, "Multi-line string test", stringTest05))
+	||	(NULL == CU_add_test(pSuite, "x10: \"true\" test", stringTest06))
+        ||	(NULL == CU_add_test(pSuite, "x10: \"This is a string\" test", stringTest07))
+        ||	(NULL == CU_add_test(pSuite, "x10: \"a\" test", stringTest08))
+        ||	(NULL == CU_add_test(pSuite, "x10: \" \" test", stringTest09))
+        ||	(NULL == CU_add_test(pSuite, "x10: Empty string test", stringTest10))
+        ||	(NULL == CU_add_test(pSuite, "x10: Multi-line string test", stringTest11))
 	)
    {
       CU_cleanup_registry();
