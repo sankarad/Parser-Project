@@ -6,24 +6,19 @@
 void check_createStack();
 void check_createEnv();
 void check_createEnvList();
-void test_addOneString(char *, char *);
-void test_addManyStrings(char *);
+void test_addStringMultTimes(char *, char *, int);
 
 void envTest00(void) { check_createStack(); }
 void envTest01(void) { check_createEnv(); }
 void envTest02(void) { check_createEnvList(); }
-void stringTest00(void) { test_addOneString("\"true\"", "true"); }
-void stringTest01(void)	{ test_addOneString("\"This is one string\"", "This is one string"); }
-void stringTest02(void)	{ test_addOneString("\"a\"", "a"); }
-void stringTest03(void)	{ test_addOneString("\" \"", " "); }
-void stringTest04(void)	{ test_addOneString("\"\"", ""); }
-void stringTest05(void) { test_addOneString("\"this\nis\na\nmultiline\nstring\"", "this\nis\na\nmultiline\nstring"); }
+void stringTest00(void) { test_addStringMultTimes("\"true\"", "true", 1); }
+void stringTest01(void)	{ test_addStringMultTimes("\"This is one string\"", "This is one string", 1); }
+void stringTest02(void)	{ test_addStringMultTimes("\"a\"", "a", 1); }
+void stringTest03(void)	{ test_addStringMultTimes("\" \"", " ", 1); }
+void stringTest04(void)	{ test_addStringMultTimes("\"\"", "", 1); }
+void stringTest05(void) { test_addStringMultTimes("\"this\nis\na\nmultiline\nstring\"", "this\nis\na\nmultiline\nstring", 1); }
 
-void test_addManyStrings(char *) {
-
-}
-
-void test_addOneString(char * input, char * strippedString) {
+void test_addStringMultTimes(char * input, char * strippedString, int count) {
 	//First check that the String is a String method can properly identify
 	CU_ASSERT_TRUE(stringIsAString(input));
 
@@ -34,17 +29,20 @@ void test_addOneString(char * input, char * strippedString) {
 	struct ExprList *stack = exprList_Empty();
 	struct BindList *env = bindList_Empty();
 	struct BindListList *envList = bindListList_Empty();
-	bindListList_push(envList,env);
 
-	//push String to stack
-	struct Expr * toPush = parse(input, envList);
-	eval(toPush, stack, envList);
-	struct Expr * top = exprList_top(stack);
-
-	//Check what has been sent to the stack
-	CU_ASSERT_TRUE(isString(top));
-	CU_ASSERT_STRING_EQUAL(nameOf(top), strippedString);
-	CU_ASSERT_STRING_EQUAL(expression2string(top), input);	
+	for (int i=0; i<count; i++) {
+		bindListList_push(envList,env);
+		
+		//push String to stack
+		struct Expr * toPush = parse(input, envList);
+		eval(toPush, stack, envList);
+		struct Expr * top = exprList_top(stack);
+		
+		//Check what has been sent to the stack
+		CU_ASSERT_TRUE(isString(top));
+		CU_ASSERT_STRING_EQUAL(nameOf(top), strippedString);
+		CU_ASSERT_STRING_EQUAL(expression2string(top), input);	
+	}
 }
 
 void check_createStack() {
