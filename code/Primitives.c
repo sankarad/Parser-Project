@@ -94,6 +94,10 @@ int c_divide(int a2, int a1); // forward declaration
 
 /*   DIV: Divide function   */
 struct Expr * divide(struct Expr * num1, struct Expr * num2){
+  if(valueOf(num2) == 0){
+	return Error();
+}  
+
   if (isNumber(num1) && isNumber(num2)) {
     return Number( c_divide(valueOf(num1), valueOf(num2)) );
   }
@@ -102,6 +106,10 @@ struct Expr * divide(struct Expr * num1, struct Expr * num2){
 
 /*   REM: Remainder function	  */
 struct Expr * rem(struct Expr * num1, struct Expr * num2){
+  if(valueOf(num2) == 0){
+	return Error();
+}
+
   if (isNumber(num1) && isNumber(num2)) {
     return Number( valueOf(num1) - valueOf(num2) * valueOf(divide(num1,num2)) );
   }
@@ -213,6 +221,9 @@ int c_divide(int a2, int a1) { // computing a2 a1 div == a2/a1
     if ((a2/a1)*a1 > a2) { return a2/a1 + (a1 < 0 ? 1 : -1); }
                     else { return a2/a1; }
   }
+  
+
+
   else { return a2/a1; }
 }
 

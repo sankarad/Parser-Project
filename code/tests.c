@@ -91,6 +91,25 @@ void subtractTest02(void){
    CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
 }
 
+void divideTest01(void){
+   struct ExprList *stack = exprList_Empty();
+   struct BindList *env = bindList_Empty();
+   struct BindListList *envList = bindListList_Empty();
+   bindListList_push(envList,env);
+
+   struct Expr * a = parse("3", envList);
+   eval(a, stack, envList);
+   struct Expr * b = parse("0", envList);
+   eval(b, stack, envList);
+   struct Expr * div = parse("div", envList);
+   eval(div, stack, envList); 	
+ 
+   struct Expr * res = exprList_top(stack);
+   char * expected = ":error:";
+   printf("divide test: stack is [3 0 div] with actual result of %s and expected is %s\n", res->subtype.error.name, expected);
+   CU_ASSERT(res->type == ERROR && res->subtype.error.name == expected);
+}
+ 
 void check_createStack() {
 	struct ExprList *stack = exprList_Empty();
 	CU_ASSERT(exprList_isEmpty(stack));
@@ -150,6 +169,7 @@ int main()
         || (NULL == CU_add_test(pSuite, "x10: \" \" test", stringTest09))
         || (NULL == CU_add_test(pSuite, "x10: Empty string test", stringTest10))
         || (NULL == CU_add_test(pSuite, "x10: Multi-line string test", stringTest11))
+	|| (NULL == CU_add_test(pSuite, "divideTest01", divideTest01))
 	)
    {
       CU_cleanup_registry();
