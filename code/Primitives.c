@@ -109,7 +109,13 @@ struct Expr * rem(struct Expr * num1, struct Expr * num2){
 }
 
 /*   CONCAT: Concatenation function	  */
-struct Expr * concat(struct Expr * string1, struct Expr * string2){
+struct Expr * concat(struct Expr * str1, struct Expr * str2){
+  if (isString(str1) && isString(str2)) {
+    char * string = (char *) malloc(sizeof(char)*(strlen(nameOf(str1)) + strlen(nameOf(str2))));
+    strcat(string, nameOf(str1));
+    strcat(string, nameOf(str2));
+    return String(string);
+  }
   return Error();
 }
 

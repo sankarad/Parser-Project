@@ -29,7 +29,7 @@ void concatTest00(void) { test_concatenationTest("\"Good\"", "\" morning\"", "\"
 void concatTest01(void) { test_concatenationTest("\"\"", "\"\"", "\"\""); }
 void concatTest02(void) { test_concatenationTest("\"many\nlines\"", "\"\nin\none\"", "\"many\nlines\nin\none\""); }
 void concatTest03(void) { test_concatenationTest("\"CSE\"", "\"306\"", "\"CSE306\""); }
-void concatTest04(void) { test_concatenationTest("CSE", "306", "CSE306"); }
+void concatTest04(void) { test_concatenationTest("CSE", "306", ":error:"); }
 
 void test_addStringMultTimes(char * input, char * strippedString, int count) {
 	//First check that the String is a String method can properly identify
@@ -84,10 +84,11 @@ void test_concatenationTest(char * input1, char * input2, char * concatted) {
 
 	if (!stringIsAString(input1) || !stringIsAString(input2)) {
 		CU_ASSERT(isError(concatResult));
+		CU_ASSERT_STRING_EQUAL(concatted, ":error:");
 	} else if (stringIsAString(input1) && stringIsAString(input2)) {
 		CU_ASSERT(isString(concatResult));		
-		CU_ASSERT_EQUAL(nameOf(concatResult), stripFirstAndLast(concatted));
-		CU_ASSERT_EQUAL(expression2string(concatResult), concatted);
+		CU_ASSERT_STRING_EQUAL(nameOf(concatResult), stripFirstAndLast(concatted));
+		CU_ASSERT_STRING_EQUAL(expression2string(concatResult), concatted);
 	}
 }
 
