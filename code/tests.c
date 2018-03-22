@@ -103,14 +103,14 @@ void test_stringLength(char * str, int expected){
    eval(lenExpr, stack, envList); 
   
    struct Expr * res = exprList_top(stack);
-
+   printf("Expected %d but actual is %d\n", expected, res->subtype.number.value);	
    CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
 }
 
-void stringLengthTest01(void){ test_stringLength("lol", 3);}
-void stringLengthTest02(void){ test_stringLength("cse306 is cool", 14);}
-void stringLengthTest03(void){ test_stringLength("just kidding!", 12);}
-void stringLengthTest04(void){ test_stringLength("", 0);}
+void stringLengthTest01(void){ test_stringLength("\"lol\"", 3);}
+void stringLengthTest02(void){ test_stringLength("\"cse306 is cool\"", 14);}
+void stringLengthTest03(void){ test_stringLength("\"just kidding!\"", 13);}
+void stringLengthTest04(void){ test_stringLength("\"\"", 0);}
 
 void check_createStack() {
 	struct ExprList *stack = exprList_Empty();
