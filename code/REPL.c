@@ -11,6 +11,7 @@ int whitespace(char ch) {
 
 /* Apply different types of operators */
 
+
 // applies a ternary operator that takes its arguments from the stack
 void applyTernary(struct Expr * (*f)(), struct ExprList * stack) {
   struct Expr * x = exprList_pop(stack); // boolean
@@ -49,9 +50,13 @@ void applyBinary(struct Expr * (*f)(), struct ExprList * stack) {
   if (y != NULL && x != NULL) {
     struct Expr * result = (*f)(y,x);
     if (isError(result)) {
-      exprList_push(stack,x);
-      exprList_push(stack,y);
-    }
+//The div function flipped the terms when there was an error ~ Sankara  
+
+  // exprList_push(stack,x);
+    exprList_push(stack,y);
+   exprList_push(stack,x);
+    
+ }
     exprList_push(stack,result);
   }
   else if (y == NULL && x == NULL) {
