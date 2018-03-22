@@ -223,6 +223,8 @@ struct Expr * parse(char * string, struct BindListList * envList){
   else if(strcmp(string,"div")== 0)      { return Primitive(DIV, "divide", 2, divide); }
   else if(strcmp(string,"rem")== 0)      { return Primitive(REM, "rem", 2, rem); }
   else if(strcmp(string,"neg")== 0)      { return Primitive(NEG, "negate", 1, negate); }
+       /* STRING OPERATORS */
+  else if(strcmp(string,"concat")== 0)   { return Primitive(CONCAT, "concat", 2, concat); }
        /* RELATIONAL OPERATORS */
   else if(strcmp(string,"equal")== 0)    { return Primitive(EQUAL, "equal", 2, equal); }
   else if(strcmp(string,"lessThan")== 0) { return Primitive(LESSTHAN, "lessThan", 2, lessThan); }

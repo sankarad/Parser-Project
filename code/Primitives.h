@@ -18,6 +18,7 @@ struct Expr * not(struct Expr * val);
 struct Expr * or(struct Expr * val1, struct Expr * val2);
 struct Expr * rem(struct Expr * num2, struct Expr * num1);
 struct Expr * sub(struct Expr * num1, struct Expr * num2);
+struct Expr * concat(struct Expr * str1, struct Expr * str2);
 void excStack(struct ExprList * stack);
 void popStack(struct ExprList * stack);
 void quit();

@@ -108,6 +108,11 @@ struct Expr * rem(struct Expr * num1, struct Expr * num2){
   return Error();
 }
 
+/*   CONCAT: Concatenation function	  */
+struct Expr * concat(struct Expr * string1, struct Expr * string2){
+  return Error();
+}
+
 
 // UNARY FUNCTIONS (1 arg from stack)
 

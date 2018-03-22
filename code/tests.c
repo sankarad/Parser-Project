@@ -8,6 +8,7 @@ void check_createStack();
 void check_createEnv();
 void check_createEnvList();
 void test_addStringMultTimes(char *, char *, int);
+void test_concatenationTest(char *, char *, char *);
 
 void envTest00(void) { check_createStack(); }
 void envTest01(void) { check_createEnv(); }
@@ -24,7 +25,11 @@ void stringTest08(void) { test_addStringMultTimes("\"a\"", "a", 10); }
 void stringTest09(void) { test_addStringMultTimes("\" \"", " ", 10); }
 void stringTest10(void) { test_addStringMultTimes("\"\"", "", 10); }
 void stringTest11(void) { test_addStringMultTimes("\"this\nis\na\nmultiline\nstring\"", "this\nis\na\nmultiline\nstring", 10); }
-
+void concatTest00(void) { test_concatenationTest("\"Good\"", "\" morning\"", "\"Good morning\""); }
+void concatTest01(void) { test_concatenationTest("\"\"", "\"\"", "\"\""); }
+void concatTest02(void) { test_concatenationTest("\"many\nlines\"", "\"\nin\none\"", "\"many\nlines\nin\none\""); }
+void concatTest03(void) { test_concatenationTest("\"CSE\"", "\"306\"", "\"CSE306\""); }
+void concatTest04(void) { test_concatenationTest("CSE", "306", "CSE306"); }
 
 void test_addStringMultTimes(char * input, char * strippedString, int count) {
 	//First check that the String is a String method can properly identify
@@ -37,9 +42,9 @@ void test_addStringMultTimes(char * input, char * strippedString, int count) {
 	struct ExprList *stack = exprList_Empty();
 	struct BindList *env = bindList_Empty();
 	struct BindListList *envList = bindListList_Empty();
+	bindListList_push(envList,env);
 
 	for (int i=0; i<count; i++) {
-		bindListList_push(envList,env);
 		
 		//push String to stack
 		struct Expr * toPush = parse(input, envList);
@@ -50,6 +55,39 @@ void test_addStringMultTimes(char * input, char * strippedString, int count) {
 		CU_ASSERT_TRUE(isString(top));
 		CU_ASSERT_STRING_EQUAL(nameOf(top), strippedString);
 		CU_ASSERT_STRING_EQUAL(expression2string(top), input);	
+	}
+}
+
+void test_concatenationTest(char * input1, char * input2, char * concatted) {
+	//set up environment and stack
+        struct ExprList *stack = exprList_Empty();
+        struct BindList *env = bindList_Empty();
+        struct BindListList *envList = bindListList_Empty();
+	bindListList_push(envList,env);
+
+	//push first value
+	struct Expr * toPush1 = parse(input1, envList);
+        eval(toPush1, stack, envList);
+
+	//push second value
+	struct Expr * toPush2 = parse(input2, envList);
+        eval(toPush2, stack, envList);
+
+	struct Expr * concatPrim = parse("concat", envList);
+	eval(concatPrim, stack, envList);
+	struct Expr * concatResult = exprList_top(stack);
+	
+	CU_ASSERT(isPrimitive(concatPrim));
+	CU_ASSERT_STRING_EQUAL(nameOf(concatPrim), "concat");
+	CU_ASSERT_EQUAL(arityOf(concatPrim), 2);
+	CU_ASSERT_EQUAL(valueOf(concatPrim), -1);
+
+	if (!stringIsAString(input1) || !stringIsAString(input2)) {
+		CU_ASSERT(isError(concatResult));
+	} else if (stringIsAString(input1) && stringIsAString(input2)) {
+		CU_ASSERT(isString(concatResult));		
+		CU_ASSERT_EQUAL(nameOf(concatResult), stripFirstAndLast(concatted));
+		CU_ASSERT_EQUAL(expression2string(concatResult), concatted);
 	}
 }
 
@@ -150,6 +188,11 @@ int main()
         || (NULL == CU_add_test(pSuite, "x10: \" \" test", stringTest09))
         || (NULL == CU_add_test(pSuite, "x10: Empty string test", stringTest10))
         || (NULL == CU_add_test(pSuite, "x10: Multi-line string test", stringTest11))
+	|| (NULL == CU_add_test(pSuite, "Good + morning", concatTest00))
+	|| (NULL == CU_add_test(pSuite, "empty + empty", concatTest01))
+	|| (NULL == CU_add_test(pSuite, "Multiline+multiline", concatTest02))
+	|| (NULL == CU_add_test(pSuite, "CSE + 306", concatTest03))
+	|| (NULL == CU_add_test(pSuite, "names: CSE + 306", concatTest04))
 	)
    {
       CU_cleanup_registry();
