@@ -22,4 +22,5 @@ void excStack(struct ExprList * stack);
 void popStack(struct ExprList * stack);
 void quit();
 
+struct Expr * length(struct Expr * str);
 #endif

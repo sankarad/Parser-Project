@@ -91,6 +91,27 @@ void subtractTest02(void){
    CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
 }
 
+void test_stringLength(char * str, int expected){
+   struct ExprList *stack = exprList_Empty();
+   struct BindList *env = bindList_Empty();
+   struct BindListList *envList = bindListList_Empty();
+   bindListList_push(envList,env);
+
+   struct Expr * strExpr  = parse(str, envList);
+   eval(strExpr, stack, envList); 
+   struct Expr * lenExpr  = parse("length", envList);
+   eval(lenExpr, stack, envList); 
+  
+   struct Expr * res = exprList_top(stack);
+
+   CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
+}
+
+void stringLengthTest01(void){ test_stringLength("lol", 3);}
+void stringLengthTest02(void){ test_stringLength("cse306 is cool", 14);}
+void stringLengthTest03(void){ test_stringLength("just kidding!", 12);}
+void stringLengthTest04(void){ test_stringLength("", 0);}
+
 void check_createStack() {
 	struct ExprList *stack = exprList_Empty();
 	CU_ASSERT(exprList_isEmpty(stack));
@@ -150,6 +171,10 @@ int main()
         || (NULL == CU_add_test(pSuite, "x10: \" \" test", stringTest09))
         || (NULL == CU_add_test(pSuite, "x10: Empty string test", stringTest10))
         || (NULL == CU_add_test(pSuite, "x10: Multi-line string test", stringTest11))
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest01", stringLengthTest01))     
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest02", stringLengthTest02))     
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest03", stringLengthTest03))     
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest04", stringLengthTest04))     
 	)
    {
       CU_cleanup_registry();

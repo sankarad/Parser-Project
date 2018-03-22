@@ -10,7 +10,7 @@
 
 enum expr_type { NUMBER=1000, BOOLEAN, ERROR, STRING, NAME, PRIMITIVE, STACKOP, QUIT, CLOSURE };
 enum stack_ops { POP=2000, EXC };
-enum prim_ops { NEG=3000, ADD, SUB, MUL, DIV, REM, NOT, AND, OR, EQUAL, LESSTHAN, IF };
+enum prim_ops { NEG=3000, ADD, SUB, MUL, DIV, REM, NOT, AND, OR, EQUAL, LESSTHAN, IF, LENGTH };
 enum other_ops { BIND_OP=4000, LOAD_OP, APPLY_OP };
 enum bool_values { FALSE=0, TRUE };
 
