@@ -95,7 +95,7 @@ int c_divide(int a2, int a1); // forward declaration
 /*   DIV: Divide function   */
 struct Expr * divide(struct Expr * num1, struct Expr * num2){
   if(valueOf(num2) == 0){
-	return Error();
+	return Error(); // I added this IF Statement, solves the floating pt exception for error B --ZACK
 }  
 
   if (isNumber(num1) && isNumber(num2)) {
@@ -107,7 +107,7 @@ struct Expr * divide(struct Expr * num1, struct Expr * num2){
 /*   REM: Remainder function	  */
 struct Expr * rem(struct Expr * num1, struct Expr * num2){
   if(valueOf(num2) == 0){
-	return Error();
+	return Error(); //I added this IF statement, solves the floating pt exception for error C -- ZACK
 }
 
   if (isNumber(num1) && isNumber(num2)) {
