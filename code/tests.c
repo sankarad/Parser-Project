@@ -130,6 +130,44 @@ void subtractTest02(void){
    CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
 }
 
+void divideTest01(void){
+   struct ExprList *stack = exprList_Empty();
+   struct BindList *env = bindList_Empty();
+   struct BindListList *envList = bindListList_Empty();
+   bindListList_push(envList,env);
+
+   struct Expr * a = parse("3", envList);
+   eval(a, stack, envList);
+   struct Expr * b = parse("0", envList);
+   eval(b, stack, envList);
+   struct Expr * div = parse("div", envList);
+   eval(div, stack, envList); 	
+ 
+   struct Expr * res = exprList_top(stack);
+   struct Expr * expected = Error();
+   printf("divide test: stack is [3 0 div] with actual result of %s expected is %s\n", res->subtype.error.name, expected->subtype.error.name);
+   CU_ASSERT(res->type == ERROR && res->subtype.error.name == expected->subtype.error.name);
+}
+
+void remainderTest01(void){
+   struct ExprList *stack = exprList_Empty();	
+   struct BindList *env = bindList_Empty();
+   struct BindListList *envList = bindListList_Empty();
+   bindListList_push(envList,env);
+
+   struct Expr * a = parse("5", envList);
+   eval(a, stack, envList);
+   struct Expr * b = parse("0", envList);
+   eval(b,stack,envList);
+   struct Expr * rem = parse("rem", envList);
+   eval(rem, stack, envList);
+   
+   struct Expr * res = exprList_top(stack);
+   struct Expr * expected = Error();
+   printf("remainder test: stack is [5 0 rem] with actual result of %s and expected result of %s\n", res->subtype.error.name, expected->subtype.error.name);
+   CU_ASSERT(res->type == ERROR && res->subtype.error.name == expected->subtype.error.name);
+} 
+  	 
 void check_createStack() {
 	struct ExprList *stack = exprList_Empty();
 	CU_ASSERT(exprList_isEmpty(stack));
@@ -194,6 +232,9 @@ int main()
 	|| (NULL == CU_add_test(pSuite, "Multiline+multiline", concatTest02))
 	|| (NULL == CU_add_test(pSuite, "CSE + 306", concatTest03))
 	|| (NULL == CU_add_test(pSuite, "names: CSE + 306", concatTest04))
+	|| (NULL == CU_add_test(pSuite, "divideTest01", divideTest01))
+	|| (NULL == CU_add_test(pSuite, "remainderTest01", remainderTest01))
+
 	)
    {
       CU_cleanup_registry();
