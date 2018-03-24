@@ -9,10 +9,16 @@ void check_createEnv();
 void check_createEnvList();
 void test_addStringMultTimes(char *, char *, int);
 void test_concatenationTest(char *, char *, char *);
+void test_conditional(char *, char *, char *, char *);
+void test_or(char *, char *, char *);
+void test_and(char *, char *, char *);
+void test_equal(char *, char *, char *);
+void test_lessThan(char *, char *, char *);
 
 void envTest00(void) { check_createStack(); }
 void envTest01(void) { check_createEnv(); }
 void envTest02(void) { check_createEnvList(); }
+
 void stringTest00(void) { test_addStringMultTimes("\"true\"", "true", 1); }
 void stringTest01(void)	{ test_addStringMultTimes("\"This is one string\"", "This is one string", 1); }
 void stringTest02(void)	{ test_addStringMultTimes("\"a\"", "a", 1); }
@@ -25,11 +31,62 @@ void stringTest08(void) { test_addStringMultTimes("\"a\"", "a", 10); }
 void stringTest09(void) { test_addStringMultTimes("\" \"", " ", 10); }
 void stringTest10(void) { test_addStringMultTimes("\"\"", "", 10); }
 void stringTest11(void) { test_addStringMultTimes("\"this\nis\na\nmultiline\nstring\"", "this\nis\na\nmultiline\nstring", 10); }
+
 void concatTest00(void) { test_concatenationTest("\"Good\"", "\" morning\"", "\"Good morning\""); }
 void concatTest01(void) { test_concatenationTest("\"\"", "\"\"", "\"\""); }
 void concatTest02(void) { test_concatenationTest("\"many\nlines\"", "\"\nin\none\"", "\"many\nlines\nin\none\""); }
 void concatTest03(void) { test_concatenationTest("\"CSE\"", "\"306\"", "\"CSE306\""); }
 void concatTest04(void) { test_concatenationTest("CSE", "306", ":error:"); }
+
+void test_conditional(char * val1, char * val2, char * booleanValue, char * expected) {
+	//set up environment and stack
+        struct ExprList *stack = exprList_Empty();
+        struct BindList *env = bindList_Empty();
+        struct BindListList *envList = bindListList_Empty();
+        bindListList_push(envList,env);
+
+        //push first value
+        struct Expr * toPush1 = parse(val1, envList);
+        eval(toPush1, stack, envList);
+	struct Expr * val1Result = exprList_top(stack);
+
+        //push second value
+        struct Expr * toPush2 = parse(val2, envList);
+        eval(toPush2, stack, envList);
+	struct Expr * val2Result = exprList_top(stack);
+
+	//push boolean value
+	struct Expr * pushBoolean = parse(booleanValue, envList);
+	eval(pushBoolean, stack, envList);
+	struct Expr * booleanResult = exprList_top(stack);
+	
+        struct Expr * ifPrim = parse("if", envList);
+        eval(ifPrim, stack, envList);
+        struct Expr * ifResult = exprList_top(stack);
+
+        CU_ASSERT(isPrimitive(ifPrim));
+        CU_ASSERT_STRING_EQUAL(nameOf(ifPrim), "if");
+        CU_ASSERT_EQUAL(arityOf(ifPrim), 3);
+        CU_ASSERT_EQUAL(valueOf(ifPrim), -1);	
+
+	if (strcmp(":true:", booleanValue)) {
+		CU_ASSERT(isBoolean(booleanResult));
+		CU_ASSERT(valueOf(booleanResult));
+		CU_ASSERT_STRING_EQUAL(nameOf(ifResult), nameOf(val1Result));
+		CU_ASSERT_EQUAL(arityOf(ifResult), arityOf(val1Result));
+		CU_ASSERT_EQUAL(valueOf(ifResult), valueOf(val1Result));
+	} else if (strcmp(":false:", booleanValue)) {
+		CU_ASSERT(isBoolean(booleanResult));
+                CU_ASSERT(!valueOf(booleanResult));
+                CU_ASSERT_STRING_EQUAL(nameOf(ifResult), nameOf(val2Result));
+                CU_ASSERT_EQUAL(arityOf(ifResult), arityOf(val2Result));
+                CU_ASSERT_EQUAL(valueOf(ifResult), valueOf(val2Result));
+	} else {
+		CU_ASSERT(!isBoolean(booleanResult));
+		CU_ASSERT(isError(ifResult));
+	}
+
+}
 
 void test_addStringMultTimes(char * input, char * strippedString, int count) {
 	//First check that the String is a String method can properly identify
