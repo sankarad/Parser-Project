@@ -4,7 +4,7 @@ OBJECTS = Bind.o BindList.o BindListList.o Expr.o ExprList.o \
 CUNIT_PATH_PREFIX = /util/CUnit/
 CUNIT_DIRECTORY = CUnit/
 CC = gcc
-FLAGS = -c -g -Wall -std=c11
+FLAGS = -c -g -O0 -Wall -fprofile-arcs -ftest-coverage -std=c11
 
 interpreter : $(OBJECTS) interpreter.o interpreter.c
 	$(CC) -Wall -lm -o interpreter $(OBJECTS) interpreter.o
@@ -34,10 +34,10 @@ REPL.o : defs.h REPL.c
 	$(CC) $(FLAGS) REPL.c
 
 tests: $(OBJECTS) tests.c
-	$(CC) -Wall -lm -L $(CUNIT_PATH_PREFIX)lib -I $(CUNIT_PATH_PREFIX)include/$(CUNIT_DIRECTORY) $(OBJECTS) tests.c -o tests -lcunit -lgcov
+	$(CC) -Wall -g -O0 -lm -fprofile-arcs -ftest-coverage -L $(CUNIT_PATH_PREFIX)lib -I $(CUNIT_PATH_PREFIX)include/$(CUNIT_DIRECTORY) $(OBJECTS) tests.c -o tests -lcunit -lgcov
 
 testsClang: $(OBJECTS) tests.c
 	clang -Wall -lm -L $(CUNIT_PATH_PREFIX)lib -I $(CUNIT_PATH_PREFIX)include/$(CUNIT_DIRECTORY) $(OBJECTS) tests.c -o tests -lcunit -lgcov
 clean :
-	rm -fv interpreter tests *.o *~
+	rm -fv interpreter tests *.o *.gcov *.gcda *.gcno *~
 
