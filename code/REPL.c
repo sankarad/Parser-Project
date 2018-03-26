@@ -233,7 +233,9 @@ struct Expr * parse(char * string, struct BindListList * envList){
        /* RELATIONAL OPERATORS */
   else if(strcmp(string,"equal")== 0)    { return Primitive(EQUAL, "equal", 2, equal); }
   else if(strcmp(string,"lessThan")== 0) { return Primitive(LESSTHAN, "lessThan", 2, lessThan); }
-       /* APPLY OPERATOR */
+      /* STRING OPERATORS */
+  else if(strcmp(string,"length") == 0) { return Primitive(LENGTH, "length", 1, length); }
+	 /* APPLY OPERATOR */
   else if(strcmp(string,"apply")== 0)    { return ApplyOp(); }
        /* CONDITIONAL OPERATORS */
   else if(strcmp(string,"if")== 0)       { return Primitive(IF, "if", 3, conditional); }

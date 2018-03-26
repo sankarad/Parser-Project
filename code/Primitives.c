@@ -238,3 +238,9 @@ int c_divide(int a2, int a1) { // computing a2 a1 div == a2/a1
   else { return a2/a1; }
 }
 
+struct Expr * length(struct Expr * str){
+  if(isString(str))
+	return Number(strlen(str->subtype.string.name));
+  return Error();	
+}
+

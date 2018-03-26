@@ -463,6 +463,34 @@ void divideTest02(void) {
    CU_ASSERT(res->type == ERROR && res->subtype.error.name == expected->subtype.error.name);
 }
 
+void test_stringLength(char * str, int expected){
+   struct ExprList *stack = exprList_Empty();
+   struct BindList *env = bindList_Empty();
+   struct BindListList *envList = bindListList_Empty();
+   bindListList_push(envList,env);
+
+   struct Expr * strExpr  = parse(str, envList);
+   eval(strExpr, stack, envList); 
+   struct Expr * lenExpr  = parse("length", envList);
+   eval(lenExpr, stack, envList); 
+  
+   struct Expr * res = exprList_top(stack);
+   printf("Expected %d but actual is %d\n", expected, res->subtype.number.value);	
+   if(res->type == ERROR){
+   	CU_ASSERT(expected == -1);
+	return;
+   }	
+   CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
+}
+
+void stringLengthTest01(void){ test_stringLength("\"lol\"", 3);}
+void stringLengthTest02(void){ test_stringLength("\"cse306 is cool\"", 14);}
+void stringLengthTest03(void){ test_stringLength("\"just kidding!\"", 13);}
+void stringLengthTest04(void){ test_stringLength("\"\"", 0);}
+void stringLengthTest05(void){ test_stringLength("\" \"", 1);}
+void stringLengthTest06(void){ test_stringLength(" ", -1);}
+void stringLengthTest07(void) {test_stringLength("", -1);}
+
 void check_createStack() {
 	struct ExprList *stack = exprList_Empty();
 	CU_ASSERT(exprList_isEmpty(stack));
@@ -557,6 +585,13 @@ int main()
         || (NULL == CU_add_test(pSuite, "neg: -21", negateTest02))
         || (NULL == CU_add_test(pSuite, "neg: :true:", negateTest03))
 	|| (NULL == CU_add_test(pSuite, "neg: \"5\"", negateTest04))
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest01", stringLengthTest01))     
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest02", stringLengthTest02))     
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest03", stringLengthTest03))     
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest04", stringLengthTest04))     
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest05", stringLengthTest05))     
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest06", stringLengthTest06))     
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest07", stringLengthTest06))     
 	)
    {
       CU_cleanup_registry();
