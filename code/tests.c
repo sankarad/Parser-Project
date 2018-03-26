@@ -14,6 +14,10 @@ void test_or(char *, char *);
 void test_and(char *, char *);
 void test_equal(char *, char *, int);
 void test_negate(char *, int, int);
+void divideTestError(char *, char *);
+void divideTestArithmetic(char *, char *, int);
+void remainderTestError(char *, char *);
+void remainderTestArithmetic(char *, char *, int);
 
 void envTest00(void) { check_createStack(); }
 void envTest01(void) { check_createEnv(); }
@@ -70,6 +74,35 @@ void negateTest01(void)	{ test_negate("14", -14, 1); }
 void negateTest02(void)	{ test_negate("-21", 21, 1); }
 void negateTest03(void)	{ test_negate(":true:", 0, 0); }
 void negateTest04(void) { test_negate("\"5\"", 0, 0); }
+
+void divideTest01(void) { divideTestError("3","0");}
+void divideTest02(void) { divideTestError("5","0");}
+void divideTest03(void) { divideTestError("-10","0");}
+void divideTest04(void) { divideTestError("hello","0");}
+void divideTest05(void) { divideTestError("3","hello");}
+void divideTest06(void) { divideTestError("goodbye","hello");}
+void divideTest07(void) { divideTestArithmetic("15","5", 3);}
+void divideTest08(void) { divideTestArithmetic("-15","5", -3);}
+void divideTest09(void) { divideTestArithmetic("15","-5", -3);}
+void divideTest10(void) { divideTestArithmetic("0","-5", 0);}
+void divideTest11(void) { divideTestArithmetic("0","5", 0);}
+void divideTest12(void) { divideTestArithmetic("-25","-5", 5);}
+void remainderTest01(void) { remainderTestError("5", "0");}
+void remainderTest02(void) { remainderTestError("3","0");}
+void remainderTest03(void) { remainderTestError("-10","0");}
+void remainderTest04(void) { remainderTestError("hello","0");}
+void remainderTest05(void) { remainderTestError("3","hello");}
+void remainderTest06(void) { remainderTestError("goodbye","hello");}
+void remainderTest07(void) { remainderTestArithmetic("55", "3", 1);}
+void remainderTest08(void) { remainderTestArithmetic("55", "-3", 1);}
+void remainderTest09(void) { remainderTestArithmetic("-55", "3", 2);}
+void remainderTest10(void) { remainderTestArithmetic("-55", "-3", 2);}
+void remainderTest11(void) { remainderTestArithmetic("400","20",0);}
+void remainderTest12(void) { remainderTestArithmetic("-400","20",0);}
+void remainderTest13(void) { remainderTestArithmetic("400","-20",0);}
+void remainderTest14(void) { remainderTestArithmetic("-400","-20",0);}
+void remainderTest15(void) { remainderTestArithmetic("0","-5", 0);}
+void remainderTest16(void) { remainderTestArithmetic("0","5", 0);}
 
 void test_negate(char * val1, int result, int isInt) {
 	//set up environment and stack
@@ -386,81 +419,80 @@ void subtractTest02(void){
    CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
 }
 
-void divideTest01(void){
+void divideTestError(char * input1, char * input2){
+
    struct ExprList *stack = exprList_Empty();
    struct BindList *env = bindList_Empty();
    struct BindListList *envList = bindListList_Empty();
    bindListList_push(envList,env);
 
-   struct Expr * a = parse("3", envList);
+
+   struct Expr * a = parse(input1, envList);
    eval(a, stack, envList);
-   struct Expr * b = parse("0", envList);
+   struct Expr * b = parse(input2, envList);
    eval(b, stack, envList);
    struct Expr * div = parse("div", envList);
    eval(div, stack, envList); 	
  
    struct Expr * res = exprList_top(stack);
    struct Expr * expected = Error();
-   printf("divide test: stack is [3 0 div] with actual result of %s expected is %s\n", res->subtype.error.name, expected->subtype.error.name);
+   printf("divide test: stack is [%s %s div] with actual result of %s expected is %s\n", input1, input2, res->subtype.error.name, expected->subtype.error.name);
    CU_ASSERT(res->type == ERROR && res->subtype.error.name == expected->subtype.error.name);
 }
 
-void remainderTest01(void){
+void divideTestArithmetic(char *input1, char * input2, int expected){
    struct ExprList *stack = exprList_Empty();
    struct BindList *env = bindList_Empty();
    struct BindListList *envList = bindListList_Empty();
    bindListList_push(envList,env);
-
-   struct Expr * a = parse("5", envList);
+   struct Expr * a = parse(input1, envList);
    eval(a, stack, envList);
-   struct Expr * b = parse("7", envList);
+   struct Expr * b = parse(input2, envList);
    eval(b, stack, envList);
-   struct Expr * sub = parse("sub", envList);
-   eval(sub, stack, envList);
-
+   struct Expr * div = parse("div", envList);
+   eval(div, stack, envList); 
+   
    struct Expr * res = exprList_top(stack);
-   int expected = -2;
-   printf("Subtract test: Stack is [5 7 sub] with actual result of %d and expected is %d\n", res->subtype.number.value, expected);
+   
+   printf("Subtract test: Stack is [%s %s div] with actual result of %d and expected is %d\n", input1, input2, res->subtype.number.value, expected);
    CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
 }
 
-void remainderTest02(void){
+void remainderTestError(char * input1, char * input2){
    struct ExprList *stack = exprList_Empty();
    struct BindList *env = bindList_Empty();
    struct BindListList *envList = bindListList_Empty();
-   bindListList_push(envList,env);
+   bindListList_push(envList,env);   
 
-   struct Expr * a = parse("5", envList);
+   struct Expr * a = parse(input1, envList);
    eval(a, stack, envList);
-   struct Expr * b = parse("0", envList);
-   eval(b,stack,envList);
+   struct Expr * b = parse(input2, envList);
+   eval(b, stack, envList);
+   struct Expr * rem = parse("rem", envList);
+   eval(rem, stack, envList);
+
+   struct Expr * res = exprList_top(stack);
+   struct Expr * expected = Error();
+   printf("divide test: stack is [%s %s rem] with actual result of %s expected is %s\n", input1, input2, res->subtype.error.name, expected->subtype.error.name);
+   CU_ASSERT(res->type == ERROR && res->subtype.error.name == expected->subtype.error.name);
+}
+void remainderTestArithmetic(char * input1, char * input2, int expected){
+	struct ExprList *stack = exprList_Empty();
+   struct BindList *env = bindList_Empty();
+   struct BindListList *envList = bindListList_Empty();
+   bindListList_push(envList,env); 
+   
+   struct Expr * a = parse(input1, envList);
+   eval(a, stack, envList);
+   struct Expr * b = parse(input2, envList);
+   eval(b, stack, envList);
    struct Expr * rem = parse("rem", envList);
    eval(rem, stack, envList);
    
    struct Expr * res = exprList_top(stack);
-   struct Expr * expected = Error();
-   printf("remainder test: stack is [5 0 rem] with actual result of %s and expected result of %s\n", res->subtype.error.name, expected->subtype.error.name);
-   CU_ASSERT(res->type == ERROR && res->subtype.error.name == expected->subtype.error.name);
-} 
-  	 
-void divideTest02(void) {
-   struct ExprList *stack = exprList_Empty();
-   struct BindList *env = bindList_Empty();
-   struct BindListList *envList = bindListList_Empty();
-   bindListList_push(envList,env);
-
-   struct Expr * a = parse("1", envList);
-   eval(a, stack, envList);
-   struct Expr * b = parse("2", envList);
-   eval(b, stack, envList);
-   struct Expr * c = parse("x", envList);
-   eval(c, stack, envList);
-   struct Expr * sub = parse("div", envList);
-   eval(sub, stack, envList);
-
-   struct Expr * res = exprList_top(stack);
-   struct Expr * expected = Error();
-   CU_ASSERT(res->type == ERROR && res->subtype.error.name == expected->subtype.error.name);
+   
+   printf("Subtract test: Stack is [%s %s rem] with actual result of %d and expected is %d\n", input1, input2, res->subtype.number.value, expected);
+   CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
 }
 
 void test_stringLength(char * str, int expected){
@@ -555,8 +587,32 @@ int main()
 	|| (NULL == CU_add_test(pSuite, "names: CSE + 306", concatTest04))
 	|| (NULL == CU_add_test(pSuite, "divideTest01", divideTest01))
 	|| (NULL == CU_add_test(pSuite, "divideTest02", divideTest02))
+	|| (NULL == CU_add_test(pSuite, "divideTest03", divideTest03))
+	|| (NULL == CU_add_test(pSuite, "divideTest04", divideTest04))
+	|| (NULL == CU_add_test(pSuite, "divideTest05", divideTest05))
+	|| (NULL == CU_add_test(pSuite, "divideTest06", divideTest06))
+	|| (NULL == CU_add_test(pSuite, "divideTest07", divideTest07))
+	|| (NULL == CU_add_test(pSuite, "divideTest08", divideTest08))
+	|| (NULL == CU_add_test(pSuite, "divideTest09", divideTest09))
+	|| (NULL == CU_add_test(pSuite, "divideTest10", divideTest10))
+	|| (NULL == CU_add_test(pSuite, "divideTest11", divideTest11))
+	|| (NULL == CU_add_test(pSuite, "divideTest12", divideTest12))
 	|| (NULL == CU_add_test(pSuite, "remainderTest01", remainderTest01))
 	|| (NULL == CU_add_test(pSuite, "remainderTest02", remainderTest02))
+	|| (NULL == CU_add_test(pSuite, "remainderTest03", remainderTest03))
+	|| (NULL == CU_add_test(pSuite, "remainderTest04", remainderTest04))
+	|| (NULL == CU_add_test(pSuite, "remainderTest05", remainderTest05))
+	|| (NULL == CU_add_test(pSuite, "remainderTest06", remainderTest06))
+	|| (NULL == CU_add_test(pSuite, "remainderTest07", remainderTest07))
+	|| (NULL == CU_add_test(pSuite, "remainderTest08", remainderTest08))
+	|| (NULL == CU_add_test(pSuite, "remainderTest09", remainderTest09))
+	|| (NULL == CU_add_test(pSuite, "remainderTest10", remainderTest10))
+	|| (NULL == CU_add_test(pSuite, "remainderTest11", remainderTest11))
+	|| (NULL == CU_add_test(pSuite, "remainderTest12", remainderTest12))
+	|| (NULL == CU_add_test(pSuite, "remainderTest13", remainderTest13))
+	|| (NULL == CU_add_test(pSuite, "remainderTest14", remainderTest14))
+	|| (NULL == CU_add_test(pSuite, "remainderTest15", remainderTest15))
+	|| (NULL == CU_add_test(pSuite, "remainderTest16", remainderTest16))
 	|| (NULL == CU_add_test(pSuite, "if: not a boolean value", conditionalTest00))
         || (NULL == CU_add_test(pSuite, "if: true", conditionalTest01))
 	|| (NULL == CU_add_test(pSuite, "if: false", conditionalTest02))
