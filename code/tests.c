@@ -12,7 +12,7 @@ void test_concatenationTest(char *, char *, char *);
 void test_conditional(char *, char *, char *);
 void test_or(char *, char *);
 void test_and(char *, char *);
-void test_equal(char *, char *, char *);
+void test_equal(char *, char *, int);
 void test_lessThan(char *, char *, char *);
 
 void envTest00(void) { check_createStack(); }
@@ -57,6 +57,56 @@ void andTest03(void) { test_and(":false:", ":true:"); }
 void andTest04(void) { test_and(":true:", "5"); }
 void andTest05(void) { test_and("5", ":false:"); }
 void andTest06(void) { test_and("\"string\"", "5"); }
+
+void equalTest00(void) { test_equal("notANumber", "5", 0); }
+void equalTest01(void) { test_equal("-12", ":false:", 0); }
+void equalTest02(void) { test_equal("10", "-10", 0); }
+void equalTest03(void) { test_equal("432", "432", 1); }
+void equalTest04(void) { test_equal("-0", "0", 1); }
+void equalTest05(void) { test_equal("-32", "-32", 1); }
+
+void test_equal(char * val1, char * val2, int isEqual) {
+	//set up environment and stack
+        struct ExprList *stack = exprList_Empty();
+        struct BindList *env = bindList_Empty();
+        struct BindListList *envList = bindListList_Empty();
+        bindListList_push(envList,env);
+
+        //push first value
+        struct Expr * toPush1 = parse(val1, envList);
+        eval(toPush1, stack, envList);
+        struct Expr * val1Result = exprList_top(stack);
+
+        //push second value
+        struct Expr * toPush2 = parse(val2, envList);
+        eval(toPush2, stack, envList);
+        struct Expr * val2Result = exprList_top(stack);
+
+        //push equal Primitive
+        struct Expr * equalPrim = parse("equal", envList);
+        eval(equalPrim, stack, envList);
+        struct Expr * equalResult = exprList_top(stack);
+
+	CU_ASSERT(isPrimitive(equalPrim));
+        CU_ASSERT_STRING_EQUAL(nameOf(equalPrim), "equal");
+        CU_ASSERT_EQUAL(arityOf(equalPrim), 2);
+        CU_ASSERT_EQUAL(valueOf(equalPrim), -1);
+
+	if (isNumber(val1Result) && isNumber(val2Result)) {
+		if (isEqual) {
+			CU_ASSERT_EQUAL(valueOf(val1Result), valueOf(val2Result));
+			CU_ASSERT(isBoolean(equalResult));
+			CU_ASSERT(valueOf(equalResult));
+		} else {
+			CU_ASSERT_NOT_EQUAL(valueOf(val1Result), valueOf(val2Result));
+			CU_ASSERT(isBoolean(equalResult));
+			CU_ASSERT(!valueOf(equalResult));
+		}
+	} else {
+		CU_ASSERT(isError(equalResult));
+		CU_ASSERT(!isEqual);
+	}
+}
 
 void test_and(char * val1, char * val2) {
         //set up environment and stack
@@ -418,6 +468,12 @@ int main()
         || (NULL == CU_add_test(pSuite, "and: true notBool", andTest04))
         || (NULL == CU_add_test(pSuite, "and: notBool false", andTest05))
         || (NULL == CU_add_test(pSuite, "and: notBool notBool", andTest06))
+	|| (NULL == CU_add_test(pSuite, "equal: notNum, pos", equalTest00))
+        || (NULL == CU_add_test(pSuite, "equal: neg, notNum", equalTest01))
+        || (NULL == CU_add_test(pSuite, "equal: -10, 10", equalTest02))
+        || (NULL == CU_add_test(pSuite, "equal: 432, 432", equalTest03))
+        || (NULL == CU_add_test(pSuite, "equal: -0 0", equalTest04))
+        || (NULL == CU_add_test(pSuite, "equal: -32 -32", equalTest05))
 
 	)
    {
