@@ -13,7 +13,7 @@ void test_conditional(char *, char *, char *);
 void test_or(char *, char *);
 void test_and(char *, char *);
 void test_equal(char *, char *, int);
-void test_lessThan(char *, char *, char *);
+void test_negate(char *, int, int);
 
 void envTest00(void) { check_createStack(); }
 void envTest01(void) { check_createEnv(); }
@@ -64,6 +64,43 @@ void equalTest02(void) { test_equal("10", "-10", 0); }
 void equalTest03(void) { test_equal("432", "432", 1); }
 void equalTest04(void) { test_equal("-0", "0", 1); }
 void equalTest05(void) { test_equal("-32", "-32", 1); }
+
+void negateTest00(void) { test_negate("0", 0, 1); }
+void negateTest01(void)	{ test_negate("14", -14, 1); }
+void negateTest02(void)	{ test_negate("-21", 21, 1); }
+void negateTest03(void)	{ test_negate(":true:", 0, 0); }
+void negateTest04(void) { test_negate("\"5\"", 0, 0); }
+
+void test_negate(char * val1, int result, int isInt) {
+	//set up environment and stack
+        struct ExprList *stack = exprList_Empty();
+        struct BindList *env = bindList_Empty();
+        struct BindListList *envList = bindListList_Empty();
+        bindListList_push(envList,env);
+
+        //push first value
+        struct Expr * toPush1 = parse(val1, envList);
+        eval(toPush1, stack, envList);
+        struct Expr * val1Result = exprList_top(stack);
+
+	//push negate Primitive
+        struct Expr * negatePrim = parse("neg", envList);
+        eval(negatePrim, stack, envList);
+        struct Expr * negateResult = exprList_top(stack);
+
+        CU_ASSERT(isPrimitive(negatePrim));
+        CU_ASSERT_STRING_EQUAL(nameOf(negatePrim), "negate");
+        CU_ASSERT_EQUAL(arityOf(negatePrim), 1);
+        CU_ASSERT_EQUAL(valueOf(negatePrim), -1);
+
+	if (isInt) {
+		CU_ASSERT(isNumber(val1Result));
+		CU_ASSERT(isNumber(negateResult));
+		CU_ASSERT_EQUAL(valueOf(negateResult), result);
+	} else {
+		CU_ASSERT(isError(negateResult));
+	}
+}
 
 void test_equal(char * val1, char * val2, int isEqual) {
 	//set up environment and stack
@@ -474,7 +511,11 @@ int main()
         || (NULL == CU_add_test(pSuite, "equal: 432, 432", equalTest03))
         || (NULL == CU_add_test(pSuite, "equal: -0 0", equalTest04))
         || (NULL == CU_add_test(pSuite, "equal: -32 -32", equalTest05))
-
+	|| (NULL == CU_add_test(pSuite, "neg: 0", negateTest00))
+        || (NULL == CU_add_test(pSuite, "neg: 14", negateTest01))
+        || (NULL == CU_add_test(pSuite, "neg: -21", negateTest02))
+        || (NULL == CU_add_test(pSuite, "neg: :true:", negateTest03))
+	|| (NULL == CU_add_test(pSuite, "neg: \"5\"", negateTest04))
 	)
    {
       CU_cleanup_registry();
