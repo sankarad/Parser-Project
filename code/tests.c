@@ -9,7 +9,7 @@ void check_createEnv();
 void check_createEnvList();
 void test_addStringMultTimes(char *, char *, int);
 void test_concatenationTest(char *, char *, char *);
-void test_conditional(char *, char *, char *, char *);
+void test_conditional(char *, char *, char *);
 void test_or(char *, char *, char *);
 void test_and(char *, char *, char *);
 void test_equal(char *, char *, char *);
@@ -38,7 +38,11 @@ void concatTest02(void) { test_concatenationTest("\"many\nlines\"", "\"\nin\none
 void concatTest03(void) { test_concatenationTest("\"CSE\"", "\"306\"", "\"CSE306\""); }
 void concatTest04(void) { test_concatenationTest("CSE", "306", ":error:"); }
 
-void test_conditional(char * val1, char * val2, char * booleanValue, char * expected) {
+void conditionalTest00(void) {test_conditional("true", "false", ":error:"); }
+void conditionalTest01(void) {test_conditional(":error:", "aName", ":true:"); }
+void conditionalTest02(void) {test_conditional(":error:", "aName", ":false:"); }
+
+void test_conditional(char * val1, char * val2, char * booleanValue) {
 	//set up environment and stack
         struct ExprList *stack = exprList_Empty();
         struct BindList *env = bindList_Empty();
@@ -69,13 +73,13 @@ void test_conditional(char * val1, char * val2, char * booleanValue, char * expe
         CU_ASSERT_EQUAL(arityOf(ifPrim), 3);
         CU_ASSERT_EQUAL(valueOf(ifPrim), -1);	
 
-	if (strcmp(":true:", booleanValue)) {
+	if (strcmp(":true:", booleanValue) == 0) {
 		CU_ASSERT(isBoolean(booleanResult));
 		CU_ASSERT(valueOf(booleanResult));
 		CU_ASSERT_STRING_EQUAL(nameOf(ifResult), nameOf(val1Result));
 		CU_ASSERT_EQUAL(arityOf(ifResult), arityOf(val1Result));
 		CU_ASSERT_EQUAL(valueOf(ifResult), valueOf(val1Result));
-	} else if (strcmp(":false:", booleanValue)) {
+	} else if (strcmp(":false:", booleanValue) == 0) {
 		CU_ASSERT(isBoolean(booleanResult));
                 CU_ASSERT(!valueOf(booleanResult));
                 CU_ASSERT_STRING_EQUAL(nameOf(ifResult), nameOf(val2Result));
@@ -291,7 +295,9 @@ int main()
 	|| (NULL == CU_add_test(pSuite, "names: CSE + 306", concatTest04))
 	|| (NULL == CU_add_test(pSuite, "divideTest01", divideTest01))
 	|| (NULL == CU_add_test(pSuite, "remainderTest01", remainderTest01))
-
+	|| (NULL == CU_add_test(pSuite, "if: not a boolean value", conditionalTest00))
+        || (NULL == CU_add_test(pSuite, "if: true", conditionalTest01))
+	|| (NULL == CU_add_test(pSuite, "if: false", conditionalTest02))
 	)
    {
       CU_cleanup_registry();
