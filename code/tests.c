@@ -386,12 +386,18 @@ void subtractTest02(void){
    CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
 }
 
+<<<<<<< HEAD
 void divideTest01(void){
+=======
+/*
+void stackordertests01(void){
+>>>>>>> bugfixsankara
    struct ExprList *stack = exprList_Empty();
    struct BindList *env = bindList_Empty();
    struct BindListList *envList = bindListList_Empty();
    bindListList_push(envList,env);
 
+<<<<<<< HEAD
    struct Expr * a = parse("3", envList);
    eval(a, stack, envList);
    struct Expr * b = parse("0", envList);
@@ -407,10 +413,28 @@ void divideTest01(void){
 
 void remainderTest01(void){
    struct ExprList *stack = exprList_Empty();	
+=======
+   struct Expr * a = parse("5", envList);
+   eval(a, stack, envList);
+   struct Expr * b = parse("7", envList);
+   eval(b, stack, envList);
+   struct Expr * sub = parse("sub", envList);
+   eval(sub, stack, envList);
+
+   struct Expr * res = exprList_top(stack);
+   int expected = -2;
+   printf("Subtract test: Stack is [5 7 sub] with actual result of %d and expected is %d\n", res->subtype.number.value, expected);
+   CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
+}
+*/
+void stackordertests02(void){
+   struct ExprList *stack = exprList_Empty();
+>>>>>>> bugfixsankara
    struct BindList *env = bindList_Empty();
    struct BindListList *envList = bindListList_Empty();
    bindListList_push(envList,env);
 
+<<<<<<< HEAD
    struct Expr * a = parse("5", envList);
    eval(a, stack, envList);
    struct Expr * b = parse("0", envList);
@@ -424,6 +448,24 @@ void remainderTest01(void){
    CU_ASSERT(res->type == ERROR && res->subtype.error.name == expected->subtype.error.name);
 } 
   	 
+=======
+   struct Expr * a = parse("1", envList);
+   eval(a, stack, envList);
+   struct Expr * b = parse("2", envList);
+   eval(b, stack, envList);
+   struct Expr * c = parse("x", envList);
+   eval(c, stack, envList);
+   struct Expr * sub = parse("div", envList);
+   eval(sub, stack, envList);
+
+   struct Expr * res = exprList_top(stack);
+   string expected = ":error";
+   printf("");
+   CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
+}
+
+
+>>>>>>> bugfixsankara
 void check_createStack() {
 	struct ExprList *stack = exprList_Empty();
 	CU_ASSERT(exprList_isEmpty(stack));
