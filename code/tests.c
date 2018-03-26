@@ -113,6 +113,7 @@ void stringLengthTest03(void){ test_stringLength("\"just kidding!\"", 13);}
 void stringLengthTest04(void){ test_stringLength("\"\"", 0);}
 void stringLengthTest05(void){ test_stringLength("\" \"", 1);}
 void stringLengthTest06(void){ test_stringLength(" ", 7);}
+void stringLengthTest07(void) {test_stringLength("", 7);}
 
 void check_createStack() {
 	struct ExprList *stack = exprList_Empty();
@@ -179,6 +180,7 @@ int main()
 	|| (NULL == CU_add_test(pSuite, "stringLengthTest04", stringLengthTest04))     
 	|| (NULL == CU_add_test(pSuite, "stringLengthTest05", stringLengthTest05))     
 	|| (NULL == CU_add_test(pSuite, "stringLengthTest06", stringLengthTest06))     
+	|| (NULL == CU_add_test(pSuite, "stringLengthTest07", stringLengthTest06))     
 	)
    {
       CU_cleanup_registry();
