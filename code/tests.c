@@ -11,7 +11,7 @@ void test_addStringMultTimes(char *, char *, int);
 void test_concatenationTest(char *, char *, char *);
 void test_conditional(char *, char *, char *);
 void test_or(char *, char *);
-void test_and(char *, char *, char *);
+void test_and(char *, char *);
 void test_equal(char *, char *, char *);
 void test_lessThan(char *, char *, char *);
 
@@ -49,6 +49,60 @@ void orTest03(void) { test_or(":false:", ":true:"); }
 void orTest04(void) { test_or(":true:", "5"); }
 void orTest05(void) { test_or("5", ":false:"); }
 void orTest06(void) { test_or("\"string\"", "5"); }
+
+void andTest00(void) { test_and(":true:", ":true:"); }
+void andTest01(void) { test_and(":false:", ":false:"); }
+void andTest02(void) { test_and(":true:", ":false:"); }
+void andTest03(void) { test_and(":false:", ":true:"); }
+void andTest04(void) { test_and(":true:", "5"); }
+void andTest05(void) { test_and("5", ":false:"); }
+void andTest06(void) { test_and("\"string\"", "5"); }
+
+void test_and(char * val1, char * val2) {
+        //set up environment and stack
+        struct ExprList *stack = exprList_Empty();
+        struct BindList *env = bindList_Empty();
+        struct BindListList *envList = bindListList_Empty();
+        bindListList_push(envList,env);
+
+        //push first value
+        struct Expr * toPush1 = parse(val1, envList);
+        eval(toPush1, stack, envList);
+        struct Expr * val1Result = exprList_top(stack);
+
+        //push second value
+        struct Expr * toPush2 = parse(val2, envList);
+        eval(toPush2, stack, envList);
+        struct Expr * val2Result = exprList_top(stack);
+
+        //push and Primitive
+        struct Expr * andPrim = parse("and", envList);
+        eval(andPrim, stack, envList);
+        struct Expr * andResult = exprList_top(stack);
+
+        CU_ASSERT(isPrimitive(andPrim));
+        CU_ASSERT_STRING_EQUAL(nameOf(andPrim), "and");
+        CU_ASSERT_EQUAL(arityOf(andPrim), 2);
+        CU_ASSERT_EQUAL(valueOf(andPrim), -1);
+
+        if ((strcmp(":false:", val1)==0 && strcmp(":false:", val2)==0)
+         || (strcmp(":true:", val1)==0 && strcmp(":false:", val2)==0)
+         || (strcmp(":false:", val1)==0 && strcmp(":true:", val2)==0)) {
+
+	        CU_ASSERT(isBoolean(val1Result));
+                CU_ASSERT(isBoolean(val2Result));
+                CU_ASSERT(isBoolean(andResult));
+                CU_ASSERT(!valueOf(andResult));
+
+        } else if ((strcmp(":true:", val1)==0 && strcmp(":true:", val2)==0)) {
+                CU_ASSERT(isBoolean(val1Result));
+                CU_ASSERT(isBoolean(val2Result));
+                CU_ASSERT(isBoolean(andResult));
+                CU_ASSERT(valueOf(andResult));
+        } else {
+                CU_ASSERT(!isBoolean(val1Result) || !isBoolean(val2Result));
+        }
+}
 
 void test_or(char * val1, char * val2) {
 	//set up environment and stack
@@ -303,8 +357,6 @@ void check_createEnvList() {
         CU_ASSERT_PTR_NULL(bindListList_pop(envList));
 }
 
-
-
 /* The main() function for setting up and running the tests.
  * Returns a CUE_SUCCESS on successful running, another
  * CUnit error code on failure.
@@ -359,6 +411,13 @@ int main()
 	|| (NULL == CU_add_test(pSuite, "or: true notBool", orTest04))
 	|| (NULL == CU_add_test(pSuite, "or: notBool false", orTest05))
 	|| (NULL == CU_add_test(pSuite, "or: notBool notBool", orTest06))
+	|| (NULL == CU_add_test(pSuite, "and: true true", andTest00))
+        || (NULL == CU_add_test(pSuite, "and: false false", andTest01))
+        || (NULL == CU_add_test(pSuite, "and: true false", andTest02))
+        || (NULL == CU_add_test(pSuite, "and: false true", andTest03))
+        || (NULL == CU_add_test(pSuite, "and: true notBool", andTest04))
+        || (NULL == CU_add_test(pSuite, "and: notBool false", andTest05))
+        || (NULL == CU_add_test(pSuite, "and: notBool notBool", andTest06))
 
 	)
    {
