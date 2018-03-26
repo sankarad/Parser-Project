@@ -386,18 +386,12 @@ void subtractTest02(void){
    CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
 }
 
-<<<<<<< HEAD
 void divideTest01(void){
-=======
-/*
-void stackordertests01(void){
->>>>>>> bugfixsankara
    struct ExprList *stack = exprList_Empty();
    struct BindList *env = bindList_Empty();
    struct BindListList *envList = bindListList_Empty();
    bindListList_push(envList,env);
 
-<<<<<<< HEAD
    struct Expr * a = parse("3", envList);
    eval(a, stack, envList);
    struct Expr * b = parse("0", envList);
@@ -412,8 +406,11 @@ void stackordertests01(void){
 }
 
 void remainderTest01(void){
-   struct ExprList *stack = exprList_Empty();	
-=======
+   struct ExprList *stack = exprList_Empty();
+   struct BindList *env = bindList_Empty();
+   struct BindListList *envList = bindListList_Empty();
+   bindListList_push(envList,env);
+
    struct Expr * a = parse("5", envList);
    eval(a, stack, envList);
    struct Expr * b = parse("7", envList);
@@ -426,15 +423,13 @@ void remainderTest01(void){
    printf("Subtract test: Stack is [5 7 sub] with actual result of %d and expected is %d\n", res->subtype.number.value, expected);
    CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
 }
-*/
-void stackordertests02(void){
+
+void remainderTest02(void){
    struct ExprList *stack = exprList_Empty();
->>>>>>> bugfixsankara
    struct BindList *env = bindList_Empty();
    struct BindListList *envList = bindListList_Empty();
    bindListList_push(envList,env);
 
-<<<<<<< HEAD
    struct Expr * a = parse("5", envList);
    eval(a, stack, envList);
    struct Expr * b = parse("0", envList);
@@ -448,7 +443,12 @@ void stackordertests02(void){
    CU_ASSERT(res->type == ERROR && res->subtype.error.name == expected->subtype.error.name);
 } 
   	 
-=======
+void divideTest02(void) {
+   struct ExprList *stack = exprList_Empty();
+   struct BindList *env = bindList_Empty();
+   struct BindListList *envList = bindListList_Empty();
+   bindListList_push(envList,env);
+
    struct Expr * a = parse("1", envList);
    eval(a, stack, envList);
    struct Expr * b = parse("2", envList);
@@ -459,13 +459,10 @@ void stackordertests02(void){
    eval(sub, stack, envList);
 
    struct Expr * res = exprList_top(stack);
-   string expected = ":error";
-   printf("");
-   CU_ASSERT(res->type == NUMBER && res->subtype.number.value == expected);
+   struct Expr * expected = Error();
+   CU_ASSERT(res->type == ERROR && res->subtype.error.name == expected->subtype.error.name);
 }
 
-
->>>>>>> bugfixsankara
 void check_createStack() {
 	struct ExprList *stack = exprList_Empty();
 	CU_ASSERT(exprList_isEmpty(stack));
@@ -529,7 +526,9 @@ int main()
 	|| (NULL == CU_add_test(pSuite, "CSE + 306", concatTest03))
 	|| (NULL == CU_add_test(pSuite, "names: CSE + 306", concatTest04))
 	|| (NULL == CU_add_test(pSuite, "divideTest01", divideTest01))
+	|| (NULL == CU_add_test(pSuite, "divideTest02", divideTest02))
 	|| (NULL == CU_add_test(pSuite, "remainderTest01", remainderTest01))
+	|| (NULL == CU_add_test(pSuite, "remainderTest02", remainderTest02))
 	|| (NULL == CU_add_test(pSuite, "if: not a boolean value", conditionalTest00))
         || (NULL == CU_add_test(pSuite, "if: true", conditionalTest01))
 	|| (NULL == CU_add_test(pSuite, "if: false", conditionalTest02))
