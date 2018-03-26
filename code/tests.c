@@ -10,7 +10,7 @@ void check_createEnvList();
 void test_addStringMultTimes(char *, char *, int);
 void test_concatenationTest(char *, char *, char *);
 void test_conditional(char *, char *, char *);
-void test_or(char *, char *, char *);
+void test_or(char *, char *);
 void test_and(char *, char *, char *);
 void test_equal(char *, char *, char *);
 void test_lessThan(char *, char *, char *);
@@ -38,9 +38,63 @@ void concatTest02(void) { test_concatenationTest("\"many\nlines\"", "\"\nin\none
 void concatTest03(void) { test_concatenationTest("\"CSE\"", "\"306\"", "\"CSE306\""); }
 void concatTest04(void) { test_concatenationTest("CSE", "306", ":error:"); }
 
-void conditionalTest00(void) {test_conditional("true", "false", ":error:"); }
-void conditionalTest01(void) {test_conditional(":error:", "aName", ":true:"); }
-void conditionalTest02(void) {test_conditional(":error:", "aName", ":false:"); }
+void conditionalTest00(void) { test_conditional("true", "false", ":error:"); }
+void conditionalTest01(void) { test_conditional(":error:", "aName", ":true:"); }
+void conditionalTest02(void) { test_conditional(":error:", "aName", ":false:"); }
+
+void orTest00(void) { test_or(":true:", ":true:"); }
+void orTest01(void) { test_or(":false:", ":false:"); }
+void orTest02(void) { test_or(":true:", ":false:"); }
+void orTest03(void) { test_or(":false:", ":true:"); }
+void orTest04(void) { test_or(":true:", "5"); }
+void orTest05(void) { test_or("5", ":false:"); }
+void orTest06(void) { test_or("\"string\"", "5"); }
+
+void test_or(char * val1, char * val2) {
+	//set up environment and stack
+        struct ExprList *stack = exprList_Empty();
+        struct BindList *env = bindList_Empty();
+        struct BindListList *envList = bindListList_Empty();
+        bindListList_push(envList,env);
+
+	//push first value
+        struct Expr * toPush1 = parse(val1, envList);
+        eval(toPush1, stack, envList);
+        struct Expr * val1Result = exprList_top(stack);
+
+        //push second value
+        struct Expr * toPush2 = parse(val2, envList);
+        eval(toPush2, stack, envList);
+        struct Expr * val2Result = exprList_top(stack);
+
+        //push or Primitive
+        struct Expr * orPrim = parse("or", envList);
+        eval(orPrim, stack, envList);
+        struct Expr * orResult = exprList_top(stack);
+
+	CU_ASSERT(isPrimitive(orPrim));
+        CU_ASSERT_STRING_EQUAL(nameOf(orPrim), "or");
+        CU_ASSERT_EQUAL(arityOf(orPrim), 2);
+        CU_ASSERT_EQUAL(valueOf(orPrim), -1);
+
+	if ((strcmp(":true:", val1)==0 && strcmp(":true:", val2)==0)
+	 || (strcmp(":true:", val1)==0 && strcmp(":false:", val2)==0)
+	 || (strcmp(":false:", val1)==0 && strcmp(":true:", val2)==0)) {
+
+		CU_ASSERT(isBoolean(val1Result));
+		CU_ASSERT(isBoolean(val2Result));
+		CU_ASSERT(isBoolean(orResult));
+		CU_ASSERT(valueOf(orResult));
+		
+	} else if ((strcmp(":false:", val1)==0 && strcmp(":false:", val2)==0)) {
+		CU_ASSERT(isBoolean(val1Result));
+                CU_ASSERT(isBoolean(val2Result));
+                CU_ASSERT(isBoolean(orResult));
+                CU_ASSERT(!valueOf(orResult));		
+	} else {
+		CU_ASSERT(!isBoolean(val1Result) || !isBoolean(val2Result));
+	}
+}
 
 void test_conditional(char * val1, char * val2, char * booleanValue) {
 	//set up environment and stack
@@ -298,6 +352,14 @@ int main()
 	|| (NULL == CU_add_test(pSuite, "if: not a boolean value", conditionalTest00))
         || (NULL == CU_add_test(pSuite, "if: true", conditionalTest01))
 	|| (NULL == CU_add_test(pSuite, "if: false", conditionalTest02))
+	|| (NULL == CU_add_test(pSuite, "or: true true", orTest00))
+	|| (NULL == CU_add_test(pSuite, "or: false false", orTest01))
+	|| (NULL == CU_add_test(pSuite, "or: true false", orTest02))
+	|| (NULL == CU_add_test(pSuite, "or: false true", orTest03))
+	|| (NULL == CU_add_test(pSuite, "or: true notBool", orTest04))
+	|| (NULL == CU_add_test(pSuite, "or: notBool false", orTest05))
+	|| (NULL == CU_add_test(pSuite, "or: notBool notBool", orTest06))
+
 	)
    {
       CU_cleanup_registry();
